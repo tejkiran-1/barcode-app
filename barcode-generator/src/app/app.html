@@ -1,0 +1,145 @@
+<div class="app-container">
+  <!-- Background gradient -->
+  <div class="background-gradient"></div>
+  
+  <!-- Glass morphism container -->
+  <div class="glass-container">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="title">{{ title() }}</h1>
+      <p class="subtitle">Generate professional barcodes instantly</p>
+    </header>
+
+    <!-- Barcode generation grid -->
+    <div class="barcode-grid">
+      
+      <!-- Barcode Generator 1 -->
+      <div class="barcode-card">
+        <div class="input-group">
+          <label for="input1" class="input-label">Input1</label>
+          <input
+            id="input1"
+            type="text"
+            class="glass-input"
+            [value]="text1()"
+            (input)="onTextChange(1, $any($event.target).value || '')"
+            placeholder="Enter text..."
+          />
+        </div>
+        <div class="barcode-container">
+          <svg #barcode1 class="barcode-svg"></svg>
+        </div>
+      </div>
+
+      <!-- Barcode Generator 2 -->
+      <div class="barcode-card">
+        <div class="input-group">
+          <label for="input2" class="input-label">Input2</label>
+          <input
+            id="input2"
+            type="text"
+            class="glass-input"
+            [value]="text2()"
+            (input)="onTextChange(2, $any($event.target).value || '')"
+            placeholder="Enter text..."
+          />
+        </div>
+        <div class="barcode-container">
+          <svg #barcode2 class="barcode-svg"></svg>
+        </div>
+      </div>
+
+      <!-- Barcode Generator 3 -->
+      <div class="barcode-card">
+        <div class="input-group">
+          <label for="input3" class="input-label">Input3</label>
+          <input
+            id="input3"
+            type="text"
+            class="glass-input"
+            [value]="text3()"
+            (input)="onTextChange(3, $any($event.target).value || '')"
+            placeholder="Enter text..."
+          />
+        </div>
+        <div class="barcode-container">
+          <svg #barcode3 class="barcode-svg"></svg>
+        </div>
+      </div>
+
+      <!-- Barcode Generator 4 -->
+      <div class="barcode-card">
+        <div class="input-group">
+          <label for="input4" class="input-label">Input4</label>
+          <input
+            id="input4"
+            type="text"
+            class="glass-input"
+            [value]="text4()"
+            (input)="onTextChange(4, $any($event.target).value || '')"
+            placeholder="Enter text..."
+          />
+        </div>
+        <div class="barcode-container">
+          <svg #barcode4 class="barcode-svg"></svg>
+        </div>
+      </div>
+
+      <!-- Barcode Generator 5 -->
+      <div class="barcode-card">
+        <div class="input-group">
+          <label for="input5" class="input-label">Input5</label>
+          <input
+            id="input5"
+            type="text"
+            class="glass-input"
+            [value]="text5()"
+            (input)="onTextChange(5, $any($event.target).value || '')"
+            placeholder="Enter text..."
+          />
+        </div>
+        <div class="barcode-container">
+          <svg #barcode5 class="barcode-svg"></svg>
+        </div>
+      </div>
+
+      <!-- Barcode Generator 6 -->
+      <div class="barcode-card">
+        <div class="input-group">
+          <label for="input6" class="input-label">Input6</label>
+          <input
+            id="input6"
+            type="text"
+            class="glass-input"
+            [value]="text6()"
+            (input)="onTextChange(6, $any($event.target).value || '')"
+            placeholder="Enter text..."
+          />
+        </div>
+        <div class="barcode-container">
+          <svg #barcode6 class="barcode-svg"></svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p class="footer-text">Powered by Mr Tej</p>
+    </footer>
+  </div>
+
+  <!-- Floating particles animation -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+</div>
+
+

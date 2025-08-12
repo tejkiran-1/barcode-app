@@ -27,12 +27,12 @@ export class App implements AfterViewInit {
   @ViewChild('qrcode5', { static: false }) qrcode5!: ElementRef<HTMLCanvasElement>;
   @ViewChild('qrcode6', { static: false }) qrcode6!: ElementRef<HTMLCanvasElement>;
 
-  text1 = signal('SAMPLE1234');
-  text2 = signal('PRODUCT567');
-  text3 = signal('BATCH890');
-  text4 = signal('SERIAL123');
-  text5 = signal('ASSET456');
-  text6 = signal('ITEM789');
+  text1 = signal('');
+  text2 = signal('');
+  text3 = signal('');
+  text4 = signal('');
+  text5 = signal('');
+  text6 = signal('');
 
   // Toggle states for each card (false = barcode, true = QR code)
   isQrMode1 = signal(false);
@@ -44,9 +44,16 @@ export class App implements AfterViewInit {
 
   // Debounce timers for each input
   private debounceTimers: { [key: number]: any } = {};
+  
+  // localStorage keys
+  private readonly STORAGE_KEYS = {
+    texts: 'barcode-generator-texts',
+    modes: 'barcode-generator-modes'
+  };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    // No effects needed - we'll use debounced input handling
+    // Load saved data from localStorage
+    this.loadFromStorage();
   }
 
   ngAfterViewInit() {
@@ -171,6 +178,9 @@ export class App implements AfterViewInit {
         break;
     }
 
+    // Save to localStorage immediately
+    this.saveToStorage();
+
     // Set new timer to generate code after 1 second of no typing
     this.debounceTimers[index] = setTimeout(() => {
       this.generateCodeForIndex(index, value);
@@ -266,6 +276,9 @@ export class App implements AfterViewInit {
         break;
     }
 
+    // Save toggle state to localStorage
+    this.saveToStorage();
+
     // Get current text and regenerate code
     const text = this.getTextForIndex(index);
     this.generateCodeForIndex(index, text);
@@ -280,6 +293,122 @@ export class App implements AfterViewInit {
       case 5: return this.text5();
       case 6: return this.text6();
       default: return '';
+    }
+  }
+
+  // localStorage methods for data persistence
+  private loadFromStorage(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        // Load text values
+        const savedTexts = localStorage.getItem(this.STORAGE_KEYS.texts);
+        if (savedTexts) {
+          const texts = JSON.parse(savedTexts);
+          this.text1.set(texts.text1 || 'SAMPLE1234');
+          this.text2.set(texts.text2 || 'PRODUCT567');
+          this.text3.set(texts.text3 || 'BATCH890');
+          this.text4.set(texts.text4 || 'SERIAL123');
+          this.text5.set(texts.text5 || 'ASSET456');
+          this.text6.set(texts.text6 || 'ITEM789');
+          console.log('📥 Loaded saved texts from localStorage');
+        } else {
+          // Set default values if no saved data
+          this.setDefaultValues();
+        }
+
+        // Load toggle modes
+        const savedModes = localStorage.getItem(this.STORAGE_KEYS.modes);
+        if (savedModes) {
+          const modes = JSON.parse(savedModes);
+          this.isQrMode1.set(modes.isQrMode1 || false);
+          this.isQrMode2.set(modes.isQrMode2 || false);
+          this.isQrMode3.set(modes.isQrMode3 || false);
+          this.isQrMode4.set(modes.isQrMode4 || false);
+          this.isQrMode5.set(modes.isQrMode5 || false);
+          this.isQrMode6.set(modes.isQrMode6 || false);
+          console.log('📥 Loaded saved toggle modes from localStorage');
+        }
+      } catch (error) {
+        console.error('❌ Error loading from localStorage:', error);
+        this.setDefaultValues();
+      }
+    } else {
+      this.setDefaultValues();
+    }
+  }
+
+  private setDefaultValues(): void {
+    this.text1.set('SAMPLE1234');
+    this.text2.set('PRODUCT567');
+    this.text3.set('BATCH890');
+    this.text4.set('SERIAL123');
+    this.text5.set('ASSET456');
+    this.text6.set('ITEM789');
+    console.log('📝 Set default text values');
+  }
+
+  private saveToStorage(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        // Save text values
+        const texts = {
+          text1: this.text1(),
+          text2: this.text2(),
+          text3: this.text3(),
+          text4: this.text4(),
+          text5: this.text5(),
+          text6: this.text6()
+        };
+        localStorage.setItem(this.STORAGE_KEYS.texts, JSON.stringify(texts));
+
+        // Save toggle modes
+        const modes = {
+          isQrMode1: this.isQrMode1(),
+          isQrMode2: this.isQrMode2(),
+          isQrMode3: this.isQrMode3(),
+          isQrMode4: this.isQrMode4(),
+          isQrMode5: this.isQrMode5(),
+          isQrMode6: this.isQrMode6()
+        };
+        localStorage.setItem(this.STORAGE_KEYS.modes, JSON.stringify(modes));
+        console.log('💾 Saved data to localStorage');
+      } catch (error) {
+        console.error('❌ Error saving to localStorage:', error);
+      }
+    }
+  }
+
+  // Method to clear all saved data (can be called manually if needed)
+  clearSavedData(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        localStorage.removeItem(this.STORAGE_KEYS.texts);
+        localStorage.removeItem(this.STORAGE_KEYS.modes);
+        console.log('🗑️ Cleared all saved data from localStorage');
+        
+        // Reset to default values
+        this.setDefaultValues();
+        
+        // Reset all toggle modes
+        this.isQrMode1.set(false);
+        this.isQrMode2.set(false);
+        this.isQrMode3.set(false);
+        this.isQrMode4.set(false);
+        this.isQrMode5.set(false);
+        this.isQrMode6.set(false);
+        
+        // Regenerate all codes with default values
+        setTimeout(() => {
+          this.generateCodeForIndex(1, this.text1());
+          this.generateCodeForIndex(2, this.text2());
+          this.generateCodeForIndex(3, this.text3());
+          this.generateCodeForIndex(4, this.text4());
+          this.generateCodeForIndex(5, this.text5());
+          this.generateCodeForIndex(6, this.text6());
+        }, 100);
+      } catch (error) {
+        console.error('❌ Error clearing localStorage:', error);
+      }
     }
   }
 }

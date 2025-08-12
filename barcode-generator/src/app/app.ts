@@ -2,6 +2,7 @@ import { Component, signal, ElementRef, ViewChild, Inject, PLATFORM_ID, AfterVie
 import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import JsBarcode from 'jsbarcode';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-root',
@@ -19,12 +20,27 @@ export class App implements AfterViewInit {
   @ViewChild('barcode5', { static: false }) barcode5!: ElementRef<SVGElement>;
   @ViewChild('barcode6', { static: false }) barcode6!: ElementRef<SVGElement>;
 
+  @ViewChild('qrcode1', { static: false }) qrcode1!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('qrcode2', { static: false }) qrcode2!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('qrcode3', { static: false }) qrcode3!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('qrcode4', { static: false }) qrcode4!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('qrcode5', { static: false }) qrcode5!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('qrcode6', { static: false }) qrcode6!: ElementRef<HTMLCanvasElement>;
+
   text1 = signal('SAMPLE1234');
   text2 = signal('PRODUCT567');
   text3 = signal('BATCH890');
   text4 = signal('SERIAL123');
   text5 = signal('ASSET456');
   text6 = signal('ITEM789');
+
+  // Toggle states for each card (false = barcode, true = QR code)
+  isQrMode1 = signal(false);
+  isQrMode2 = signal(false);
+  isQrMode3 = signal(false);
+  isQrMode4 = signal(false);
+  isQrMode5 = signal(false);
+  isQrMode6 = signal(false);
 
   // Debounce timers for each input
   private debounceTimers: { [key: number]: any } = {};
@@ -34,15 +50,15 @@ export class App implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Generate initial barcodes after view is initialized
+    // Generate initial codes after view is initialized
     if (isPlatformBrowser(this.platformId)) {
       setTimeout(() => {
-        this.generateBarcode(this.text1(), this.barcode1);
-        this.generateBarcode(this.text2(), this.barcode2);
-        this.generateBarcode(this.text3(), this.barcode3);
-        this.generateBarcode(this.text4(), this.barcode4);
-        this.generateBarcode(this.text5(), this.barcode5);
-        this.generateBarcode(this.text6(), this.barcode6);
+        this.generateCodeForIndex(1, this.text1());
+        this.generateCodeForIndex(2, this.text2());
+        this.generateCodeForIndex(3, this.text3());
+        this.generateCodeForIndex(4, this.text4());
+        this.generateCodeForIndex(5, this.text5());
+        this.generateCodeForIndex(6, this.text6());
       }, 500);
     }
   }
@@ -80,6 +96,44 @@ export class App implements AfterViewInit {
     }
   }
 
+  private async generateQRCode(text: string, element: ElementRef<HTMLCanvasElement> | undefined) {
+    if (isPlatformBrowser(this.platformId) && element && element.nativeElement && text && text.trim()) {
+      console.log('🔄 Generating QR code for:', text.trim());
+      try {
+        // Clear previous QR code
+        const canvas = element.nativeElement;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        await QRCode.toCanvas(canvas, text.trim(), {
+          width: 200,
+          color: {
+            dark: '#006BD3',
+            light: 'transparent'
+          },
+          errorCorrectionLevel: 'M',
+          margin: 1
+        });
+        console.log('✅ QR code generated successfully for:', text.trim());
+      } catch (error) {
+        console.error('❌ Error generating QR code:', error);
+        // Display error message on canvas
+        const canvas = element.nativeElement;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = '#666';
+          ctx.font = '12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('Invalid text', canvas.width / 2, canvas.height / 2);
+        }
+      }
+    } else {
+      console.log('⏭️  QR code generation skipped - requirements not met');
+    }
+  }
+
   onTextChange(index: number, value: string) {
     console.log(`Text change ${index}:`, value); // Debug log
 
@@ -110,33 +164,115 @@ export class App implements AfterViewInit {
         break;
     }
 
-    // Set new timer to generate barcode after 1 second of no typing
+    // Set new timer to generate code after 1 second of no typing
     this.debounceTimers[index] = setTimeout(() => {
-      this.generateBarcodeForIndex(index, value);
+      this.generateCodeForIndex(index, value);
     }, 1000);
   }
 
-  private generateBarcodeForIndex(index: number, text: string) {
-    console.log(`Generating barcode for index ${index} with text:`, text);
+  private generateCodeForIndex(index: number, text: string) {
+    console.log(`Generating code for index ${index} with text:`, text);
+    
+    const isQrMode = this.getQrModeForIndex(index);
+    
+    if (isQrMode) {
+      // Generate QR code
+      switch (index) {
+        case 1:
+          this.generateQRCode(text, this.qrcode1);
+          break;
+        case 2:
+          this.generateQRCode(text, this.qrcode2);
+          break;
+        case 3:
+          this.generateQRCode(text, this.qrcode3);
+          break;
+        case 4:
+          this.generateQRCode(text, this.qrcode4);
+          break;
+        case 5:
+          this.generateQRCode(text, this.qrcode5);
+          break;
+        case 6:
+          this.generateQRCode(text, this.qrcode6);
+          break;
+      }
+    } else {
+      // Generate barcode
+      switch (index) {
+        case 1:
+          this.generateBarcode(text, this.barcode1);
+          break;
+        case 2:
+          this.generateBarcode(text, this.barcode2);
+          break;
+        case 3:
+          this.generateBarcode(text, this.barcode3);
+          break;
+        case 4:
+          this.generateBarcode(text, this.barcode4);
+          break;
+        case 5:
+          this.generateBarcode(text, this.barcode5);
+          break;
+        case 6:
+          this.generateBarcode(text, this.barcode6);
+          break;
+      }
+    }
+  }
+
+  private getQrModeForIndex(index: number): boolean {
+    switch (index) {
+      case 1: return this.isQrMode1();
+      case 2: return this.isQrMode2();
+      case 3: return this.isQrMode3();
+      case 4: return this.isQrMode4();
+      case 5: return this.isQrMode5();
+      case 6: return this.isQrMode6();
+      default: return false;
+    }
+  }
+
+  toggleCodeType(index: number) {
+    console.log(`Toggling code type for index ${index}`);
+    
+    // Toggle the mode
     switch (index) {
       case 1:
-        this.generateBarcode(text, this.barcode1);
+        this.isQrMode1.set(!this.isQrMode1());
         break;
       case 2:
-        this.generateBarcode(text, this.barcode2);
+        this.isQrMode2.set(!this.isQrMode2());
         break;
       case 3:
-        this.generateBarcode(text, this.barcode3);
+        this.isQrMode3.set(!this.isQrMode3());
         break;
       case 4:
-        this.generateBarcode(text, this.barcode4);
+        this.isQrMode4.set(!this.isQrMode4());
         break;
       case 5:
-        this.generateBarcode(text, this.barcode5);
+        this.isQrMode5.set(!this.isQrMode5());
         break;
       case 6:
-        this.generateBarcode(text, this.barcode6);
+        this.isQrMode6.set(!this.isQrMode6());
         break;
+    }
+
+    // Get current text and regenerate code
+    const text = this.getTextForIndex(index);
+    this.generateCodeForIndex(index, text);
+  }
+
+  private getTextForIndex(index: number): string {
+    switch (index) {
+      case 1: return this.text1();
+      case 2: return this.text2();
+      case 3: return this.text3();
+      case 4: return this.text4();
+      case 5: return this.text5();
+      case 6: return this.text6();
+      default: return '';
     }
   }
 }

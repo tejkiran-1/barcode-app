@@ -16,7 +16,13 @@
       <!-- Barcode Generator 1 -->
       <div class="barcode-card">
         <div class="input-group">
-          <label for="input1" class="input-label">Input1</label>
+          <div class="input-header">
+            <label for="input1" class="input-label">Input1</label>
+            <div class="toggle-switch" [class.qr-mode]="isQrMode1()" (click)="toggleCodeType(1)">
+              <div class="toggle-slider"></div>
+              <span class="toggle-label">{{ isQrMode1() ? 'QR' : 'BC' }}</span>
+            </div>
+          </div>
           <input
             id="input1"
             type="text"
@@ -27,14 +33,21 @@
           />
         </div>
         <div class="barcode-container">
-          <svg #barcode1 class="barcode-svg"></svg>
+          <svg #barcode1 class="barcode-svg" [style.display]="isQrMode1() ? 'none' : 'block'"></svg>
+          <canvas #qrcode1 class="qr-canvas" [style.display]="isQrMode1() ? 'block' : 'none'" width="200" height="200"></canvas>
         </div>
       </div>
 
       <!-- Barcode Generator 2 -->
       <div class="barcode-card">
         <div class="input-group">
-          <label for="input2" class="input-label">Input2</label>
+          <div class="input-header">
+            <label for="input2" class="input-label">Input2</label>
+            <div class="toggle-switch" [class.qr-mode]="isQrMode2()" (click)="toggleCodeType(2)">
+              <div class="toggle-slider"></div>
+              <span class="toggle-label">{{ isQrMode2() ? 'QR' : 'BC' }}</span>
+            </div>
+          </div>
           <input
             id="input2"
             type="text"
@@ -45,14 +58,21 @@
           />
         </div>
         <div class="barcode-container">
-          <svg #barcode2 class="barcode-svg"></svg>
+          <svg #barcode2 class="barcode-svg" [style.display]="isQrMode2() ? 'none' : 'block'"></svg>
+          <canvas #qrcode2 class="qr-canvas" [style.display]="isQrMode2() ? 'block' : 'none'" width="200" height="200"></canvas>
         </div>
       </div>
 
       <!-- Barcode Generator 3 -->
       <div class="barcode-card">
         <div class="input-group">
-          <label for="input3" class="input-label">Input3</label>
+          <div class="input-header">
+            <label for="input3" class="input-label">Input3</label>
+            <div class="toggle-switch" [class.qr-mode]="isQrMode3()" (click)="toggleCodeType(3)">
+              <div class="toggle-slider"></div>
+              <span class="toggle-label">{{ isQrMode3() ? 'QR' : 'BC' }}</span>
+            </div>
+          </div>
           <input
             id="input3"
             type="text"
@@ -63,14 +83,21 @@
           />
         </div>
         <div class="barcode-container">
-          <svg #barcode3 class="barcode-svg"></svg>
+          <svg #barcode3 class="barcode-svg" [style.display]="isQrMode3() ? 'none' : 'block'"></svg>
+          <canvas #qrcode3 class="qr-canvas" [style.display]="isQrMode3() ? 'block' : 'none'" width="200" height="200"></canvas>
         </div>
       </div>
 
       <!-- Barcode Generator 4 -->
       <div class="barcode-card">
         <div class="input-group">
-          <label for="input4" class="input-label">Input4</label>
+          <div class="input-header">
+            <label for="input4" class="input-label">Input4</label>
+            <div class="toggle-switch" [class.qr-mode]="isQrMode4()" (click)="toggleCodeType(4)">
+              <div class="toggle-slider"></div>
+              <span class="toggle-label">{{ isQrMode4() ? 'QR' : 'BC' }}</span>
+            </div>
+          </div>
           <input
             id="input4"
             type="text"
@@ -81,14 +108,21 @@
           />
         </div>
         <div class="barcode-container">
-          <svg #barcode4 class="barcode-svg"></svg>
+          <svg #barcode4 class="barcode-svg" [style.display]="isQrMode4() ? 'none' : 'block'"></svg>
+          <canvas #qrcode4 class="qr-canvas" [style.display]="isQrMode4() ? 'block' : 'none'" width="200" height="200"></canvas>
         </div>
       </div>
 
       <!-- Barcode Generator 5 -->
       <div class="barcode-card">
         <div class="input-group">
-          <label for="input5" class="input-label">Input5</label>
+          <div class="input-header">
+            <label for="input5" class="input-label">Input5</label>
+            <div class="toggle-switch" [class.qr-mode]="isQrMode5()" (click)="toggleCodeType(5)">
+              <div class="toggle-slider"></div>
+              <span class="toggle-label">{{ isQrMode5() ? 'QR' : 'BC' }}</span>
+            </div>
+          </div>
           <input
             id="input5"
             type="text"
@@ -99,14 +133,21 @@
           />
         </div>
         <div class="barcode-container">
-          <svg #barcode5 class="barcode-svg"></svg>
+          <svg #barcode5 class="barcode-svg" [style.display]="isQrMode5() ? 'none' : 'block'"></svg>
+          <canvas #qrcode5 class="qr-canvas" [style.display]="isQrMode5() ? 'block' : 'none'" width="200" height="200"></canvas>
         </div>
       </div>
 
       <!-- Barcode Generator 6 -->
       <div class="barcode-card">
         <div class="input-group">
-          <label for="input6" class="input-label">Input6</label>
+          <div class="input-header">
+            <label for="input6" class="input-label">Input6</label>
+            <div class="toggle-switch" [class.qr-mode]="isQrMode6()" (click)="toggleCodeType(6)">
+              <div class="toggle-slider"></div>
+              <span class="toggle-label">{{ isQrMode6() ? 'QR' : 'BC' }}</span>
+            </div>
+          </div>
           <input
             id="input6"
             type="text"
@@ -117,7 +158,8 @@
           />
         </div>
         <div class="barcode-container">
-          <svg #barcode6 class="barcode-svg"></svg>
+          <svg #barcode6 class="barcode-svg" [style.display]="isQrMode6() ? 'none' : 'block'"></svg>
+          <canvas #qrcode6 class="qr-canvas" [style.display]="isQrMode6() ? 'block' : 'none'" width="200" height="200"></canvas>
         </div>
       </div>
 

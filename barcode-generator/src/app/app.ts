@@ -100,8 +100,13 @@ export class App implements AfterViewInit {
     if (isPlatformBrowser(this.platformId) && element && element.nativeElement && text && text.trim()) {
       console.log('🔄 Generating QR code for:', text.trim());
       try {
-        // Clear previous QR code
         const canvas = element.nativeElement;
+
+        // Set canvas size properly
+        canvas.width = 200;
+        canvas.height = 200;
+
+        // Clear previous QR code
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -111,10 +116,10 @@ export class App implements AfterViewInit {
           width: 200,
           color: {
             dark: '#006BD3',
-            light: 'transparent'
+            light: '#FFFFFF'
           },
           errorCorrectionLevel: 'M',
-          margin: 1
+          margin: 2
         });
         console.log('✅ QR code generated successfully for:', text.trim());
       } catch (error) {
@@ -123,10 +128,12 @@ export class App implements AfterViewInit {
         const canvas = element.nativeElement;
         const ctx = canvas.getContext('2d');
         if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.fillStyle = '#666';
-          ctx.font = '12px Arial';
+          ctx.font = '14px Arial';
           ctx.textAlign = 'center';
-          ctx.fillText('Invalid text', canvas.width / 2, canvas.height / 2);
+          ctx.fillText('Error generating QR code', canvas.width / 2, canvas.height / 2 - 10);
+          ctx.fillText('Please try different text', canvas.width / 2, canvas.height / 2 + 10);
         }
       }
     } else {
@@ -172,9 +179,9 @@ export class App implements AfterViewInit {
 
   private generateCodeForIndex(index: number, text: string) {
     console.log(`Generating code for index ${index} with text:`, text);
-    
+
     const isQrMode = this.getQrModeForIndex(index);
-    
+
     if (isQrMode) {
       // Generate QR code
       switch (index) {
@@ -236,7 +243,7 @@ export class App implements AfterViewInit {
 
   toggleCodeType(index: number) {
     console.log(`Toggling code type for index ${index}`);
-    
+
     // Toggle the mode
     switch (index) {
       case 1:

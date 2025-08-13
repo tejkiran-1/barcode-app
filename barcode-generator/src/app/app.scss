@@ -1,5 +1,6 @@
 // Import Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 
 // Color Variables based on Ecolab theme
 :host {
@@ -346,6 +347,86 @@
     font-size: 0.9rem;
     font-weight: 500;
     opacity: 0.8;
+  }
+
+  .tech-signature {
+    position: relative;
+    display: inline-block;
+    font-family: 'Orbitron', 'Courier New', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--primary-light);
+    text-shadow: 
+      0 0 5px rgba(74, 144, 226, 0.8),
+      0 0 10px rgba(74, 144, 226, 0.6),
+      0 0 15px rgba(0, 107, 211, 0.4),
+      0 0 20px rgba(0, 107, 211, 0.2);
+    padding: 10px 20px;
+    border: 2px solid var(--primary-light);
+    border-radius: 8px;
+    background: rgba(0, 20, 40, 0.8);
+    box-shadow: 
+      inset 0 0 15px rgba(74, 144, 226, 0.3),
+      0 0 20px rgba(0, 107, 211, 0.4);
+    overflow: hidden;
+    
+    .tech-text {
+      position: relative;
+      z-index: 2;
+      animation: text-glitch 8s ease-in-out infinite;
+      
+      &::before, &::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+      }
+      
+      &::before {
+        left: -2px;
+        text-shadow: -2px 0 var(--primary-color);
+        animation: glitch-anim-1 4s infinite linear alternate-reverse;
+      }
+      
+      &::after {
+        left: 2px;
+        text-shadow: -2px 0 var(--primary-light);
+        animation: glitch-anim-2 6s infinite linear alternate-reverse;
+      }
+    }
+    
+    .scanline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary-light);
+      opacity: 0.8;
+      z-index: 3;
+      animation: scanline-anim 5s linear infinite;
+      box-shadow: 0 0 10px var(--primary-light);
+    }
+
+    .by-text {
+      font-size: 1rem;
+      opacity: 0.7;
+      margin: 0 0.5em;
+    }
+
+    .name-text {
+      color: var(--text-white);
+      text-shadow: 
+        0 0 8px var(--text-white),
+        0 0 15px var(--primary-light);
+    }
   }
 }
 
@@ -905,5 +986,184 @@
       animation: text-flicker 2s ease-in-out infinite;
       color: rgba(0, 107, 211, 0.8);
     }
+  }
+}
+
+// New techy signature effects
+@keyframes background-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// Enhanced elegant signature effects
+.footer {
+  .tech-signature {
+    position: relative;
+    display: inline-block;
+    font-family: 'Orbitron', 'Courier New', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--primary-light);
+    text-shadow: 
+      0 0 5px rgba(74, 144, 226, 0.8),
+      0 0 10px rgba(74, 144, 226, 0.6),
+      0 0 15px rgba(0, 107, 211, 0.4),
+      0 0 20px rgba(0, 107, 211, 0.2);
+    padding: 10px 20px;
+    border: 2px solid var(--primary-light);
+    border-radius: 8px;
+    background: rgba(0, 20, 40, 0.8);
+    box-shadow: 
+      inset 0 0 15px rgba(74, 144, 226, 0.3),
+      0 0 20px rgba(0, 107, 211, 0.4);
+    overflow: hidden;
+    
+    .tech-text {
+      position: relative;
+      z-index: 2;
+      animation: text-glitch 8s ease-in-out infinite;
+      
+      &::before, &::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+      }
+      
+      &::before {
+        left: -2px;
+        text-shadow: -2px 0 var(--primary-color);
+        animation: glitch-anim-1 4s infinite linear alternate-reverse;
+      }
+      
+      &::after {
+        left: 2px;
+        text-shadow: -2px 0 var(--primary-light);
+        animation: glitch-anim-2 6s infinite linear alternate-reverse;
+      }
+    }
+    
+    .scanline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary-light);
+      opacity: 0.8;
+      z-index: 3;
+      animation: scanline-anim 5s linear infinite;
+      box-shadow: 0 0 10px var(--primary-light);
+    }
+
+    .by-text {
+      font-size: 1rem;
+      opacity: 0.7;
+      margin: 0 0.5em;
+    }
+
+    .name-text {
+      color: var(--text-white);
+      text-shadow: 
+        0 0 8px var(--text-white),
+        0 0 15px var(--primary-light);
+    }
+  }
+}
+
+@keyframes text-glitch {
+  0%, 100% {
+    transform: none;
+    opacity: 1;
+  }
+  20% {
+    transform: skewX(5deg) translateX(3px);
+    opacity: 0.9;
+  }
+  22% {
+    transform: skewX(-5deg) translateX(-3px);
+    opacity: 1;
+  }
+  60% {
+    transform: none;
+    opacity: 1;
+  }
+  61% {
+    opacity: 0.7;
+  }
+  62% {
+    transform: translateX(5px) scaleY(1.1);
+    opacity: 0.8;
+  }
+  63% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes glitch-anim-1 {
+  0% { clip: rect(42px, 9999px, 44px, 0); }
+  5% { clip: rect(12px, 9999px, 60px, 0); }
+  10% { clip: rect(32px, 9999px, 12px, 0); }
+  15% { clip: rect(42px, 9999px, 44px, 0); }
+  20% { clip: rect(10px, 9999px, 80px, 0); }
+  25% { clip: rect(50px, 9999px, 52px, 0); }
+  30% { clip: rect(25px, 9999px, 65px, 0); }
+  35% { clip: rect(10px, 9999px, 40px, 0); }
+  40% { clip: rect(40px, 9999px, 42px, 0); }
+  45% { clip: rect(20px, 9999px, 70px, 0); }
+  50% { clip: rect(60px, 9999px, 62px, 0); }
+  55% { clip: rect(30px, 9999px, 50px, 0); }
+  60% { clip: rect(15px, 9999px, 75px, 0); }
+  65% { clip: rect(45px, 9999px, 47px, 0); }
+  70% { clip: rect(18px, 9999px, 68px, 0); }
+  75% { clip: rect(55px, 9999px, 57px, 0); }
+  80% { clip: rect(28px, 9999px, 58px, 0); }
+  85% { clip: rect(8px, 9999px, 48px, 0); }
+  90% { clip: rect(38px, 9999px, 40px, 0); }
+  95% { clip: rect(22px, 9999px, 72px, 0); }
+  100% { clip: rect(62px, 9999px, 64px, 0); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip: rect(2px, 9999px, 98px, 0); }
+  5% { clip: rect(78px, 9999px, 2px, 0); }
+  10% { clip: rect(48px, 9999px, 52px, 0); }
+  15% { clip: rect(2px, 9999px, 98px, 0); }
+  20% { clip: rect(68px, 9999px, 12px, 0); }
+  25% { clip: rect(38px, 9999px, 42px, 0); }
+  30% { clip: rect(5px, 9999px, 85px, 0); }
+  35% { clip: rect(70px, 9999px, 20px, 0); }
+  40% { clip: rect(40px, 9999px, 42px, 0); }
+  45% { clip: rect(80px, 9999px, 5px, 0); }
+  50% { clip: rect(2px, 9999px, 98px, 0); }
+  55% { clip: rect(50px, 9999px, 30px, 0); }
+  60% { clip: rect(10px, 9999px, 90px, 0); }
+  65% { clip: rect(75px, 9999px, 25px, 0); }
+  70% { clip: rect(58px, 9999px, 18px, 0); }
+  75% { clip: rect(35px, 9999px, 75px, 0); }
+  80% { clip: rect(62px, 9999px, 22px, 0); }
+  85% { clip: rect(42px, 9999px, 8px, 0); }
+  90% { clip: rect(15px, 9999px, 80px, 0); }
+  95% { clip: rect(65px, 9999px, 15px, 0); }
+  100% { clip: rect(2px, 9999px, 98px, 0); }
+}
+
+@keyframes scanline-anim {
+  0% {
+    top: -10%;
+    opacity: 0.6;
+  }
+  100% {
+    top: 110%;
+    opacity: 0;
   }
 }

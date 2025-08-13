@@ -5,24 +5,24 @@
 // Color Variables based on Ecolab theme
 :host {
   --primary-color: #006BD3;
-  --primary-light: #4A90E2;
-  --primary-dark: #004B9A;
+  --primary-light: color-mix(in srgb, var(--primary-color), white 30%);
+  --primary-dark: color-mix(in srgb, var(--primary-color), black 30%);
   --glass-bg: rgba(255, 255, 255, 0.15);
   --glass-border: rgba(255, 255, 255, 0.2);
   --text-primary: #2c3e50;
   --text-secondary: #7f8c8d;
   --text-white: #ffffff;
-  --shadow-light: rgba(0, 107, 211, 0.1);
-  --shadow-medium: rgba(0, 107, 211, 0.2);
-  --shadow-heavy: rgba(0, 107, 211, 0.3);
-  --gradient-1: linear-gradient(135deg, #006BD3 0%, #4A90E2 100%);
-  --gradient-2: linear-gradient(135deg, rgba(0, 107, 211, 0.8) 0%, rgba(74, 144, 226, 0.8) 100%);
+  --shadow-light: color-mix(in srgb, var(--primary-color), transparent 90%);
+  --shadow-medium: color-mix(in srgb, var(--primary-color), transparent 80%);
+  --shadow-heavy: color-mix(in srgb, var(--primary-color), transparent 70%);
+  --gradient-1: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  --gradient-2: linear-gradient(135deg, color-mix(in srgb, var(--primary-color), transparent 20%) 0%, color-mix(in srgb, var(--primary-light), transparent 20%) 100%);
   --border-radius: 20px;
   --border-radius-small: 12px;
-  --scary-blue: #006BD3;
-  --scary-light-blue: #4A90E2;
+  --scary-blue: var(--primary-color);
+  --scary-light-blue: var(--primary-light);
   --scary-white: #ffffff;
-  --scary-shadow: #006BD3cc;
+  --scary-shadow: color-mix(in srgb, var(--primary-color), transparent 20%);
   --random-delay-1: 2s;
   --random-delay-2: 5s;
   --random-delay-3: 8s;
@@ -115,6 +115,112 @@
     height: 2px;
     background: var(--gradient-1);
     border-radius: var(--border-radius) var(--border-radius) 0 0;
+  }
+}
+
+// Color Picker Styles
+.color-picker-container {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  z-index: 10;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 
+      0 6px 16px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+  }
+}
+
+.color-picker-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.color-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 50%;
+  }
+  
+  &::-webkit-color-swatch {
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 
+      0 2px 6px rgba(0, 0, 0, 0.15),
+      inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+  }
+  
+  &::-moz-color-swatch {
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 
+      0 2px 6px rgba(0, 0, 0, 0.15),
+      inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    
+    &::-webkit-color-swatch {
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 0 0 4px color-mix(in srgb, var(--primary-color), transparent 85%),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    }
+    
+    &::-moz-color-swatch {
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 0 0 4px color-mix(in srgb, var(--primary-color), transparent 85%),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  &:active {
+    transform: scale(1.05);
   }
 }
 

@@ -3,7 +3,19 @@
   <div class="background-gradient"></div>
   
   <!-- Glass morphism container -->
-  <div class="glass-container">
+  <div class="glass-container" [style.--primary-color]="themeColor()">
+    <!-- Color Picker -->
+    <div class="color-picker-container">
+      <label for="themeColorPicker" class="color-picker-label">Theme</label>
+      <input
+        type="color"
+        id="themeColorPicker"
+        class="color-picker"
+        [value]="themeColor()"
+        (input)="onColorChange($any($event.target).value)"
+      />
+    </div>
+
     <!-- Header -->
     <header class="header">
       <h1 class="title">{{ title() }}</h1>

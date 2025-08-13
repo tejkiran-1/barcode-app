@@ -34,6 +34,9 @@ export class App implements AfterViewInit {
   text5 = signal('');
   text6 = signal('');
 
+  // Theme color signal
+  themeColor = signal('#006BD3');
+
   // Toggle states for each card (false = barcode, true = QR code)
   isQrMode1 = signal(false);
   isQrMode2 = signal(false);
@@ -48,7 +51,8 @@ export class App implements AfterViewInit {
   // localStorage keys
   private readonly STORAGE_KEYS = {
     texts: 'barcode-generator-texts',
-    modes: 'barcode-generator-modes'
+    modes: 'barcode-generator-modes',
+    theme: 'barcode-generator-theme'
   };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -88,7 +92,7 @@ export class App implements AfterViewInit {
           textPosition: 'bottom',
           textMargin: 8,
           background: 'transparent',
-          lineColor: '#006BD3'
+          lineColor: this.themeColor()
         });
         console.log('✅ Barcode generated successfully for:', text.trim());
       } catch (error) {
@@ -122,7 +126,7 @@ export class App implements AfterViewInit {
         await QRCode.toCanvas(canvas, text.trim(), {
           width: 200,
           color: {
-            dark: '#006BD3',
+            dark: this.themeColor(),
             light: '#FFFFFF'
           },
           errorCorrectionLevel: 'M',
@@ -185,6 +189,22 @@ export class App implements AfterViewInit {
     this.debounceTimers[index] = setTimeout(() => {
       this.generateCodeForIndex(index, value);
     }, 1000);
+  }
+
+  onColorChange(color: string) {
+    console.log('Theme color changed to:', color);
+    this.themeColor.set(color);
+    this.saveToStorage();
+    
+    // Regenerate all codes with the new color
+    setTimeout(() => {
+      this.generateCodeForIndex(1, this.text1());
+      this.generateCodeForIndex(2, this.text2());
+      this.generateCodeForIndex(3, this.text3());
+      this.generateCodeForIndex(4, this.text4());
+      this.generateCodeForIndex(5, this.text5());
+      this.generateCodeForIndex(6, this.text6());
+    }, 100);
   }
 
   private generateCodeForIndex(index: number, text: string) {
@@ -328,6 +348,13 @@ export class App implements AfterViewInit {
           this.isQrMode6.set(modes.isQrMode6 || false);
           console.log('📥 Loaded saved toggle modes from localStorage');
         }
+
+        // Load theme color
+        const savedTheme = localStorage.getItem(this.STORAGE_KEYS.theme);
+        if (savedTheme) {
+          this.themeColor.set(savedTheme);
+          console.log('📥 Loaded saved theme color from localStorage:', savedTheme);
+        }
       } catch (error) {
         console.error('❌ Error loading from localStorage:', error);
         this.setDefaultValues();
@@ -371,6 +398,10 @@ export class App implements AfterViewInit {
           isQrMode6: this.isQrMode6()
         };
         localStorage.setItem(this.STORAGE_KEYS.modes, JSON.stringify(modes));
+        
+        // Save theme color
+        localStorage.setItem(this.STORAGE_KEYS.theme, this.themeColor());
+        
         console.log('💾 Saved data to localStorage');
       } catch (error) {
         console.error('❌ Error saving to localStorage:', error);
@@ -384,10 +415,12 @@ export class App implements AfterViewInit {
       try {
         localStorage.removeItem(this.STORAGE_KEYS.texts);
         localStorage.removeItem(this.STORAGE_KEYS.modes);
+        localStorage.removeItem(this.STORAGE_KEYS.theme);
         console.log('🗑️ Cleared all saved data from localStorage');
 
         // Reset to default values
         this.setDefaultValues();
+        this.themeColor.set('#006BD3');
 
         // Reset all toggle modes
         this.isQrMode1.set(false);

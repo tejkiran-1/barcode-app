@@ -44,7 +44,7 @@ export class App implements AfterViewInit {
 
   // Debounce timers for each input
   private debounceTimers: { [key: number]: any } = {};
-  
+
   // localStorage keys
   private readonly STORAGE_KEYS = {
     texts: 'barcode-generator-texts',
@@ -385,10 +385,10 @@ export class App implements AfterViewInit {
         localStorage.removeItem(this.STORAGE_KEYS.texts);
         localStorage.removeItem(this.STORAGE_KEYS.modes);
         console.log('🗑️ Cleared all saved data from localStorage');
-        
+
         // Reset to default values
         this.setDefaultValues();
-        
+
         // Reset all toggle modes
         this.isQrMode1.set(false);
         this.isQrMode2.set(false);
@@ -396,7 +396,7 @@ export class App implements AfterViewInit {
         this.isQrMode4.set(false);
         this.isQrMode5.set(false);
         this.isQrMode6.set(false);
-        
+
         // Regenerate all codes with default values
         setTimeout(() => {
           this.generateCodeForIndex(1, this.text1());

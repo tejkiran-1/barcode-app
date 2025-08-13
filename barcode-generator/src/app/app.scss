@@ -18,6 +18,22 @@
   --gradient-2: linear-gradient(135deg, rgba(0, 107, 211, 0.8) 0%, rgba(74, 144, 226, 0.8) 100%);
   --border-radius: 20px;
   --border-radius-small: 12px;
+  --scary-blue: #006BD3;
+  --scary-light-blue: #4A90E2;
+  --scary-white: #ffffff;
+  --scary-shadow: #006BD3cc;
+  --random-delay-1: 2s;
+  --random-delay-2: 5s;
+  --random-delay-3: 8s;
+  --random-delay-4: 12s;
+  --random-delay-5: 15s;
+  --random-delay-6: 18s;
+  --glow-delay-1: 3s;
+  --glow-delay-2: 7s;
+  --glow-delay-3: 11s;
+  --glow-delay-4: 14s;
+  --glow-delay-5: 17s;
+  --glow-delay-6: 21s;
 
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -141,36 +157,14 @@
 }
 
 .barcode-card {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--border-radius-small);
-  padding: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-      transparent 0%, 
-      rgba(255, 255, 255, 0.4) 50%, 
-      transparent 100%);
-  }
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 
-      0 20px 40px var(--shadow-medium),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    border-color: rgba(0, 107, 211, 0.3);
-  }
 }
 
 .input-group {
@@ -191,6 +185,10 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0;
+    animation: text-border-glow 10s infinite;
+    animation-delay: var(--glow-delay, 8s);
+    will-change: text-shadow;
+    transform: translateZ(0);
   }
 
   .toggle-switch {
@@ -508,5 +506,404 @@
   .barcode-container {
     background: rgba(255, 255, 255, 0.95);
     color: var(--text-primary);
+  }
+}
+
+// ===== PERFORMANCE-OPTIMIZED SCARY BORDER ANIMATIONS =====
+
+// Scary running border effect (GPU accelerated)
+@keyframes scary-border-run {
+  0% { 
+    background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%;
+  }
+  25% { 
+    background-position: 100% 0%, 100% 100%, 0% 100%, 0% 0%;
+  }
+  50% { 
+    background-position: 100% 100%, 0% 100%, 0% 0%, 100% 0%;
+  }
+  75% { 
+    background-position: 0% 100%, 0% 0%, 100% 0%, 100% 100%;
+  }
+  100% { 
+    background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%;
+  }
+}
+
+// Creepy pulsing border
+@keyframes creepy-border-pulse {
+  0%, 70%, 100% { 
+    border-color: rgba(0, 107, 211, 0.3);
+    box-shadow: 0 0 0 0 rgba(0, 107, 211, 0);
+  }
+  85% { 
+    border-color: var(--scary-light-blue);
+    box-shadow: 0 0 0 4px rgba(0, 107, 211, 0.1);
+  }
+}
+
+// Random scary border flash
+@keyframes border-flash {
+  0%, 95%, 100% { 
+    border-color: transparent;
+    box-shadow: inset 0 0 0 1px rgba(0, 107, 211, 0.2);
+  }
+  97% { 
+    border-color: var(--scary-light-blue);
+    box-shadow: 
+      inset 0 0 0 2px var(--scary-blue),
+      0 0 10px rgba(0, 107, 211, 0.3);
+  }
+  98% { 
+    border-color: rgba(0, 107, 211, 0.6);
+    box-shadow: 
+      inset 0 0 0 1px rgba(0, 107, 211, 0.3),
+      0 0 5px rgba(0, 107, 211, 0.2);
+  }
+}
+
+// Optimized text border glow
+@keyframes text-border-glow {
+  0%, 85%, 100% { 
+    text-shadow: none;
+  }
+  90% { 
+    text-shadow: 
+      0 0 3px var(--scary-white),
+      0 0 6px var(--scary-blue);
+  }
+  95% { 
+    text-shadow: 
+      0 0 2px var(--scary-light-blue),
+      0 0 8px var(--scary-blue);
+  }
+}
+
+// Creepy moving border gradient
+@keyframes moving-border-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// More prominent glitch effect
+@keyframes scary-glitch {
+  0%, 95% { 
+    transform: translate(0); 
+    filter: hue-rotate(0deg);
+  }
+  96% { 
+    transform: translate(-2px, 1px); 
+    filter: hue-rotate(90deg);
+  }
+  97% { 
+    transform: translate(2px, -1px); 
+    filter: hue-rotate(180deg);
+  }
+  98% { 
+    transform: translate(-1px, 2px); 
+    filter: hue-rotate(270deg);
+  }
+  99% { 
+    transform: translate(1px, -2px); 
+    filter: hue-rotate(0deg);
+  }
+  100% { 
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+}
+
+// Eerie shadow pulsing
+@keyframes eerie-shadow-pulse {
+  0%, 70%, 100% { 
+    box-shadow: 
+      0 8px 32px var(--shadow-light),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  85% { 
+    box-shadow: 
+      0 15px 60px rgba(255, 0, 0, 0.1),
+      0 8px 32px var(--shadow-medium),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+// Creepy text flicker
+@keyframes text-flicker {
+  0%, 92%, 100% { 
+    opacity: 1; 
+    text-shadow: none;
+  }
+  93% { 
+    opacity: 0.8; 
+    text-shadow: 0 0 5px var(--scary-white);
+  }
+  94% { 
+    opacity: 1; 
+    text-shadow: 0 0 10px var(--scary-blue);
+  }
+  95% { 
+    opacity: 0.7; 
+    text-shadow: 0 0 3px var(--scary-white);
+  }
+  96% { 
+    opacity: 1; 
+    text-shadow: none;
+  }
+}
+
+// Ominous background shift
+@keyframes ominous-shift {
+  0%, 80%, 100% { 
+    filter: brightness(1) contrast(1);
+  }
+  90% { 
+    filter: brightness(0.95) contrast(1.05);
+  }
+}
+
+// Subtle but noticeable particle tremor
+@keyframes particle-tremor {
+  0%, 85%, 100% { 
+    transform: translateY(0px) rotate(0deg) scale(1); 
+  }
+  90% { 
+    transform: translateY(-3px) rotate(2deg) scale(1.1); 
+  }
+  95% { 
+    transform: translateY(2px) rotate(-1deg) scale(0.9); 
+  }
+}
+
+// Cards breathing more noticeably
+@keyframes card-breathing {
+  0%, 60%, 100% { 
+    transform: scale(1) translateY(0px);
+    box-shadow: 
+      0 8px 32px var(--shadow-light),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  80% { 
+    transform: scale(1) translateY(0px);
+    box-shadow: 
+      0 12px 40px var(--shadow-medium),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+// Apply noticeable scary effects
+.glass-container {
+  animation: eerie-shadow-pulse 12s infinite ease-in-out;
+  
+  // More prominent glitch every 15 seconds
+  &:nth-child(odd) {
+    animation: eerie-shadow-pulse 12s infinite ease-in-out, 
+               scary-glitch 0.3s infinite;
+    animation-delay: 0s, 15s;
+  }
+}
+
+.barcode-card {
+  // Performance optimizations
+  will-change: border-color, box-shadow;
+  transform: translateZ(0); // Force hardware acceleration
+  backface-visibility: hidden;
+  
+  // Removed random scary border effects - users found them distracting
+  
+  // Add moving gradient border effect
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+      transparent, 
+      rgba(0, 107, 211, 0.1), 
+      transparent, 
+      rgba(255, 255, 255, 0.1), 
+      transparent);
+    background-size: 400% 400%;
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    animation: moving-border-gradient 8s ease-in-out infinite;
+    will-change: background-position, opacity;
+  }
+  
+  &:hover::after {
+    opacity: 1;
+    animation-duration: 2s;
+  }
+}
+
+.title {
+  animation: text-flicker 10s infinite, text-border-glow 8s infinite;
+  animation-delay: 8s, 15s;
+  will-change: text-shadow;
+  transform: translateZ(0);
+}
+
+.subtitle {
+  animation: text-flicker 14s infinite, text-border-glow 12s infinite;
+  animation-delay: 12s, 20s;
+  will-change: text-shadow;
+  transform: translateZ(0);
+}
+
+.background-gradient {
+  animation: ominous-shift 16s infinite ease-in-out;
+}
+
+.particles .particle {
+  animation-duration: 20s, 12s;
+  animation-name: floating, particle-tremor;
+  animation-iteration-count: infinite, infinite;
+  animation-timing-function: ease-in-out, ease-in-out;
+  
+  // Staggered tremor effects - removed random border delays for cards
+  &:nth-child(7) { animation-delay: 12s, 4s; }
+  &:nth-child(8) { animation-delay: 14s, 8s; }
+}
+
+// Dramatic input field effects
+.glass-input {
+  &:focus {
+    animation: text-flicker 0.5s ease-out, scary-glitch 0.1s ease-in-out 2s;
+    transition: all 0.3s ease, box-shadow 0.5s ease;
+    
+    &::placeholder {
+      animation: text-flicker 1s ease-out;
+    }
+  }
+  
+  // Creepy typing effect
+  &:not(:placeholder-shown) {
+    box-shadow: 
+      0 0 0 4px rgba(0, 107, 211, 0.1),
+      0 8px 16px var(--shadow-light),
+      inset 0 0 10px rgba(255, 0, 0, 0.05);
+  }
+}
+
+// More noticeable toggle switch mystery
+.toggle-switch {
+  &:hover {
+    animation: scary-glitch 0.08s ease-in-out 0.5s;
+    filter: brightness(1.1) contrast(1.05);
+  }
+  
+  &.qr-mode {
+    animation: text-flicker 0.3s ease-out;
+  }
+}
+
+// Eerie barcode/QR generation effects
+.barcode-container {
+  &:hover {
+    animation: eerie-shadow-pulse 4s infinite ease-in-out;
+    filter: brightness(1.02) contrast(1.03);
+  }
+}
+
+.qr-canvas, .barcode-svg {
+  &:hover {
+    animation: scary-glitch 0.1s ease-in-out 1s;
+  }
+}
+
+// Dramatic cursor effects for interactive elements
+.barcode-card, .toggle-switch, .glass-input {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-1px);  // Reduced movement
+    filter: brightness(1.02);  // Reduced brightness change
+  }
+  
+  // More noticeable "watched" feeling
+  &::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: transparent;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+  
+  &:hover::before {
+    opacity: 0.05;  // Reduced opacity
+    background: radial-gradient(circle at center, rgba(0, 107, 211, 0.05), rgba(255, 255, 255, 0.03), transparent);
+  }
+}
+
+// Add noticeable "presence" to the entire app
+.app-container {
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.03) 90%, rgba(50, 0, 0, 0.02) 100%);
+    pointer-events: none;
+    z-index: -1;
+    animation: ominous-shift 18s infinite ease-in-out;
+  }
+  
+  // Random screen "flickers"
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    animation: screen-flicker 25s infinite;
+  }
+}
+
+@keyframes screen-flicker {
+  0%, 85%, 100% { opacity: 0; transform: translateX(-100%); }
+  87% { opacity: 1; transform: translateX(0%); }
+  89% { opacity: 0; transform: translateX(100%); }
+}
+
+// Barcode/QR containers get noticeable unease when generating
+.barcode-container, .qr-canvas {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    filter: drop-shadow(0 4px 8px rgba(0, 107, 211, 0.2)) 
+            drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+    // Removed the breathing animation that made it feel broken
+  }
+}
+
+// Creepy footer effects
+.footer {
+  .footer-text {
+    animation: text-flicker 20s infinite;
+    animation-delay: 30s;
+    
+    &:hover {
+      animation: text-flicker 2s ease-in-out infinite;
+      color: rgba(0, 107, 211, 0.8);
+    }
   }
 }

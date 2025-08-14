@@ -1,0 +1,687 @@
+<!-- Main container with theme support -->
+<div class="shipment-manager-container" [style.--primary-color]="themeColor()">
+    <!-- Background gradient -->
+    <div class="background-gradient"></div>
+
+    <!-- Main glass container -->
+    <div class="glass-container">
+
+        <!-- Color Picker -->
+        <div class="color-picker-container">
+            <label for="themeColorPicker" class="color-picker-label">Theme</label>
+            <input type="color" id="themeColorPicker" class="color-picker" [value]="themeColor()"
+                (input)="onColorChange($any($event.target).value)"
+                (change)="onColorChange($any($event.target).value)" />
+        </div>
+
+        <!-- Header with back button -->
+        <header class="header">
+            <div class="header-controls">
+                <button class="back-button" (click)="goBack()" title="Back to Barcode Generator">
+                    <svg class="back-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    Back
+                </button>
+            </div>
+
+            <h1 class="title">Shipment Manager</h1>
+            <p class="subtitle">Manage and view shipment deliveries with barcode generation</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-navigation">
+            <button class="tab-button" [class.active]="activeTab() === 'view'" (click)="switchTab('view')">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2"
+                        fill="none" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none" />
+                </svg>
+                View Shipments
+            </button>
+
+            <button class="tab-button" [class.active]="activeTab() === 'create'" (click)="switchTab('create')">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Create Shipment
+            </button>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+
+            <!-- VIEW TAB -->
+            <div class="tab-pane" [class.active]="activeTab() === 'view'">
+
+                <!-- Search Section -->
+                <div class="search-section">
+                    <div class="search-group">
+                        <label for="searchInput" class="search-label">Shipment / Delivery Number</label>
+                        <div class="search-input-group">
+                            <input id="searchInput" type="text" class="search-input"
+                                placeholder="Enter shipment or delivery number..." [value]="searchNumber()"
+                                (input)="searchNumber.set($any($event.target).value || '')"
+                                (keyup.enter)="searchShipment()" />
+                            <button class="search-button" [disabled]="isSearching()" (click)="searchShipment()">
+                                <svg *ngIf="!isSearching()" class="search-icon" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none" />
+                                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <svg *ngIf="isSearching()" class="loading-spinner" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12 6V2M12 22V18M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                {{ isSearching() ? 'Searching...' : 'Search' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" *ngIf="currentShipment()" #barcodeContainer>
+
+                    <!-- Shipment Overview Card -->
+                    <div class="shipment-overview-card">
+                        <div class="shipment-header">
+                            <div class="shipment-title-section">
+                                <h2 class="shipment-title">
+                                    <svg class="shipment-icon" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7Z"
+                                            stroke="currentColor" stroke-width="2" />
+                                        <path d="M8 11H16" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                        <path d="M8 15H12" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    Shipment {{ currentShipment()!.shipmentNumber }}
+                                </h2>
+                                <div class="shipment-meta">
+                                    <span class="meta-chip">
+                                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor"
+                                                stroke-width="2" />
+                                            <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor"
+                                                stroke-width="2" />
+                                            <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2" />
+                                        </svg>
+                                        Created {{ formatDate(currentShipment()!.createdAt) }}
+                                    </span>
+                                    <span class="meta-chip">
+                                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                            <polyline points="12,6 12,12 16,14" stroke="currentColor"
+                                                stroke-width="2" />
+                                        </svg>
+                                        Updated {{ formatDate(currentShipment()!.updatedAt) }}
+                                    </span>
+                                    <span class="meta-chip deliveries-count">
+                                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M16 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V6C4 4.89543 4.89543 4 6 4H8"
+                                                stroke="currentColor" stroke-width="2" />
+                                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="currentColor"
+                                                stroke-width="2" />
+                                        </svg>
+                                        {{ currentShipment()!.deliveries.length }} {{
+                                        currentShipment()!.deliveries.length === 1 ? 'Delivery' : 'Deliveries' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipment Barcode Section -->
+                        <div class="code-display-section">
+                            <div class="code-header">
+                                <h3 class="code-title">Shipment Barcode</h3>
+                            </div>
+                            <div class="code-container shipment-code">
+                                <svg [id]="'shipment-barcode-' + getSafeId(currentShipment()!.shipmentNumber)"
+                                    class="barcode-display"></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deliveries Grid -->
+                    <div class="deliveries-grid">
+                        <div class="delivery-card"
+                            *ngFor="let delivery of currentShipment()!.deliveries; trackBy: trackByDeliveryNumber">
+
+                            <!-- Delivery Header -->
+                            <div class="delivery-header">
+                                <div class="delivery-title-section">
+                                    <h3 class="delivery-title">{{ delivery.deliveryNumber }}</h3>
+                                    <div class="delivery-badges">
+                                        <span class="delivery-type-badge" [class]="'type-' + delivery.deliveryType">
+                                            {{ getDeliveryTypeName(delivery.deliveryType) }}
+                                        </span>
+                                        <span class="delivery-date-badge">{{ formatDate(delivery.createdAt) }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Toggle Button -->
+                                <div class="toggle-container">
+                                    <div class="toggle-switch"
+                                        [class.qr-mode]="isDeliveryQrMode(delivery.deliveryNumber)"
+                                        (click)="toggleDeliveryCode(delivery.deliveryNumber)">
+                                        <div class="toggle-slider"></div>
+                                        <span class="toggle-text toggle-text-bc">BC</span>
+                                        <span class="toggle-text toggle-text-qr">QR</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Code Display -->
+                            <div class="code-display-section">
+                                <div class="code-container delivery-code">
+                                    <!-- Barcode (default) -->
+                                    <div class="code-display"
+                                        [class.hidden]="isDeliveryQrMode(delivery.deliveryNumber)">
+                                        <svg [id]="'delivery-barcode-' + getSafeId(delivery.deliveryNumber)"
+                                            class="barcode-display"></svg>
+                                    </div>
+
+                                    <!-- QR Code (when toggled) -->
+                                    <div class="code-display"
+                                        [class.hidden]="!isDeliveryQrMode(delivery.deliveryNumber)">
+                                        <canvas [id]="'delivery-qr-' + getSafeId(delivery.deliveryNumber)"
+                                            class="qr-display"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Items Section -->
+                            <div class="items-section"
+                                *ngIf="(delivery.containerItems && delivery.containerItems.length > 0) || (delivery.bulkItems && delivery.bulkItems.length > 0)">
+
+                                <!-- Container Items -->
+                                <div class="items-group"
+                                    *ngIf="delivery.containerItems && delivery.containerItems.length > 0">
+                                    <h4 class="items-group-title">
+                                        <svg class="items-icon" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor"
+                                                stroke-width="2" />
+                                            <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor"
+                                                stroke-width="2" />
+                                            <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor"
+                                                stroke-width="2" />
+                                        </svg>
+                                        Container Items ({{ delivery.containerItems.length }})
+                                    </h4>
+
+                                    <div class="items-grid">
+                                        <div class="item-card"
+                                            *ngFor="let item of delivery.containerItems; let i = index; trackBy: trackByItemIndex">
+                                            <div class="item-header">
+                                                <div class="item-info">
+                                                    <div class="item-field">
+                                                        <label class="item-label">Material #</label>
+                                                        <span class="item-value">{{ item.materialNumber }}</span>
+                                                    </div>
+                                                    <div class="item-field">
+                                                        <label class="item-label">Serial #</label>
+                                                        <span class="item-value">{{ item.serialNumber }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Item Toggle -->
+                                                <div class="toggle-container item-toggle">
+                                                    <div class="toggle-switch mini"
+                                                        [class.qr-mode]="isItemQrMode(getSafeId(delivery.deliveryNumber) + '-container-' + i)"
+                                                        (click)="toggleItemCode(getSafeId(delivery.deliveryNumber) + '-container-' + i)">
+                                                        <div class="toggle-slider"></div>
+                                                        <span class="toggle-text toggle-text-bc">BC</span>
+                                                        <span class="toggle-text toggle-text-qr">QR</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="item-codes-container">
+                                                <!-- Material Number Code (Top) -->
+                                                <div class="code-section">
+                                                    <label class="code-label">Material Number</label>
+                                                    <div class="item-code-container">
+                                                        <!-- Material Barcode (default) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="isItemQrMode(getSafeId(delivery.deliveryNumber) + '-container-' + i)">
+                                                            <svg [id]="'material-barcode-' + getSafeId(delivery.deliveryNumber) + '-container-' + i"
+                                                                class="barcode-display mini"></svg>
+                                                        </div>
+
+                                                        <!-- Material QR Code (when toggled) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="!isItemQrMode(getSafeId(delivery.deliveryNumber) + '-container-' + i)">
+                                                            <canvas
+                                                                [id]="'material-qr-' + getSafeId(delivery.deliveryNumber) + '-container-' + i"
+                                                                class="qr-display mini"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Serial Number Code (Bottom) -->
+                                                <div class="code-section">
+                                                    <label class="code-label">Serial Number</label>
+                                                    <div class="item-code-container">
+                                                        <!-- Serial Barcode (default) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="isItemQrMode(getSafeId(delivery.deliveryNumber) + '-container-' + i)">
+                                                            <svg [id]="'serial-barcode-' + getSafeId(delivery.deliveryNumber) + '-container-' + i"
+                                                                class="barcode-display mini"></svg>
+                                                        </div>
+
+                                                        <!-- Serial QR Code (when toggled) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="!isItemQrMode(getSafeId(delivery.deliveryNumber) + '-container-' + i)">
+                                                            <canvas
+                                                                [id]="'serial-qr-' + getSafeId(delivery.deliveryNumber) + '-container-' + i"
+                                                                class="qr-display mini"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bulk Items -->
+                                <div class="items-group" *ngIf="delivery.bulkItems && delivery.bulkItems.length > 0">
+                                    <h4 class="items-group-title">
+                                        <svg class="items-icon" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor"
+                                                stroke-width="2" />
+                                            <rect x="9" y="9" width="6" height="6" stroke="currentColor"
+                                                stroke-width="2" />
+                                        </svg>
+                                        Bulk Items ({{ delivery.bulkItems.length }})
+                                    </h4>
+
+                                    <div class="items-grid">
+                                        <div class="item-card"
+                                            *ngFor="let item of delivery.bulkItems; let i = index; trackBy: trackByItemIndex">
+                                            <div class="item-header">
+                                                <div class="item-info">
+                                                    <div class="item-field">
+                                                        <label class="item-label">Material #</label>
+                                                        <span class="item-value">{{ item.materialNumber }}</span>
+                                                    </div>
+                                                    <div class="item-field">
+                                                        <label class="item-label">EVD Seal #</label>
+                                                        <span class="item-value">{{ item.evdSealNumber }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Item Toggle -->
+                                                <div class="toggle-container item-toggle">
+                                                    <div class="toggle-switch mini"
+                                                        [class.qr-mode]="isItemQrMode(getSafeId(delivery.deliveryNumber) + '-bulk-' + i)"
+                                                        (click)="toggleItemCode(getSafeId(delivery.deliveryNumber) + '-bulk-' + i)">
+                                                        <div class="toggle-slider"></div>
+                                                        <span class="toggle-text toggle-text-bc">BC</span>
+                                                        <span class="toggle-text toggle-text-qr">QR</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="item-codes-container">
+                                                <!-- Material Number Code (Top) -->
+                                                <div class="code-section">
+                                                    <label class="code-label">Material Number</label>
+                                                    <div class="item-code-container">
+                                                        <!-- Material Barcode (default) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="isItemQrMode(getSafeId(delivery.deliveryNumber) + '-bulk-' + i)">
+                                                            <svg [id]="'material-barcode-' + getSafeId(delivery.deliveryNumber) + '-bulk-' + i"
+                                                                class="barcode-display mini"></svg>
+                                                        </div>
+
+                                                        <!-- Material QR Code (when toggled) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="!isItemQrMode(getSafeId(delivery.deliveryNumber) + '-bulk-' + i)">
+                                                            <canvas
+                                                                [id]="'material-qr-' + getSafeId(delivery.deliveryNumber) + '-bulk-' + i"
+                                                                class="qr-display mini"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- EVD Seal Number Code (Bottom) -->
+                                                <div class="code-section">
+                                                    <label class="code-label">EVD Seal Number</label>
+                                                    <div class="item-code-container">
+                                                        <!-- EVD Seal Barcode (default) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="isItemQrMode(getSafeId(delivery.deliveryNumber) + '-bulk-' + i)">
+                                                            <svg [id]="'evd-barcode-' + getSafeId(delivery.deliveryNumber) + '-bulk-' + i"
+                                                                class="barcode-display mini"></svg>
+                                                        </div>
+
+                                                        <!-- EVD Seal QR Code (when toggled) -->
+                                                        <div class="code-display"
+                                                            [class.hidden]="!isItemQrMode(getSafeId(delivery.deliveryNumber) + '-bulk-' + i)">
+                                                            <canvas
+                                                                [id]="'evd-qr-' + getSafeId(delivery.deliveryNumber) + '-bulk-' + i"
+                                                                class="qr-display mini"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No results message -->
+                <div class="no-results" *ngIf="searchNumber() && !currentShipment() && !isSearching()">
+                    <svg class="no-results-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none" />
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <h3>No Results Found</h3>
+                    <p>Try searching with a different shipment or delivery number.</p>
+                </div>
+            </div>
+
+            <!-- CREATE TAB -->
+            <div class="tab-pane" [class.active]="activeTab() === 'create'">
+
+                <!-- Create Form -->
+                <form class="create-form" (ngSubmit)="saveShipmentDelivery()">
+
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">Basic Information</h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="shipmentNumber" class="form-label">
+                                    Shipment Number <span class="required">*</span>
+                                </label>
+                                <input id="shipmentNumber" type="text" class="form-input"
+                                    placeholder="Enter shipment number..." [(ngModel)]="createForm.shipmentNumber"
+                                    name="shipmentNumber" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="deliveryNumber" class="form-label">
+                                    Delivery Number <span class="required">*</span>
+                                </label>
+                                <input id="deliveryNumber" type="text" class="form-input"
+                                    placeholder="Enter delivery number..." [(ngModel)]="createForm.deliveryNumber"
+                                    name="deliveryNumber" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Type -->
+                    <div class="form-section">
+                        <h3 class="section-title">Delivery Type</h3>
+
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="deliveryType" [value]="DeliveryType.Container"
+                                    [checked]="createForm.deliveryType === DeliveryType.Container"
+                                    (change)="onDeliveryTypeChange(DeliveryType.Container)" />
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">Container</span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input type="radio" name="deliveryType" [value]="DeliveryType.Bulk"
+                                    [checked]="createForm.deliveryType === DeliveryType.Bulk"
+                                    (change)="onDeliveryTypeChange(DeliveryType.Bulk)" />
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">Bulk</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Container Items -->
+                    <div class="form-section" *ngIf="createForm.deliveryType === DeliveryType.Container">
+                        <div class="section-header">
+                            <h3 class="section-title">Container Items</h3>
+                            <button type="button" class="add-button" (click)="addContainerItem()">
+                                <svg class="add-icon" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Add Item
+                            </button>
+                        </div>
+
+                        <div class="items-list">
+                            <div class="item-form" *ngFor="let item of createForm.containerItems; let i = index">
+                                <div class="item-header">
+                                    <span class="item-number">Item {{ i + 1 }}</span>
+                                    <button type="button" class="remove-button"
+                                        *ngIf="createForm.containerItems.length > 1" (click)="removeContainerItem(i)">
+                                        <svg class="remove-icon" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="item-fields">
+                                    <div class="form-group">
+                                        <label [for]="'containerMaterial' + i" class="form-label">
+                                            Material Number <span class="required">*</span>
+                                        </label>
+                                        <input [id]="'containerMaterial' + i" type="text" class="form-input"
+                                            placeholder="Enter material number..." [(ngModel)]="item.materialNumber"
+                                            [name]="'containerMaterial' + i" required />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label [for]="'containerSerial' + i" class="form-label">
+                                            Serial Number <span class="required">*</span>
+                                        </label>
+                                        <input [id]="'containerSerial' + i" type="text" class="form-input"
+                                            placeholder="Enter serial number..." [(ngModel)]="item.serialNumber"
+                                            [name]="'containerSerial' + i" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Items -->
+                    <div class="form-section" *ngIf="createForm.deliveryType === DeliveryType.Bulk">
+                        <div class="section-header">
+                            <h3 class="section-title">Bulk Items</h3>
+                            <button type="button" class="add-button" (click)="addBulkItem()">
+                                <svg class="add-icon" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Add Item
+                            </button>
+                        </div>
+                        <div class="items-list">
+                            <div class="item-form" *ngFor="let item of createForm.bulkItems; let i = index">
+                                <div class="item-header">
+                                    <span class="item-number">Item {{ i + 1 }}</span>
+                                    <button type="button" class="remove-button" *ngIf="createForm.bulkItems.length > 1"
+                                        (click)="removeBulkItem(i)">
+                                        <svg class="remove-icon" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="item-fields">
+                                    <div class="form-group">
+                                        <label [for]="'bulkMaterial' + i" class="form-label">
+                                            Material Number <span class="required">*</span>
+                                        </label>
+                                        <input [id]="'bulkMaterial' + i" type="text" class="form-input"
+                                            placeholder="Enter material number..." [(ngModel)]="item.materialNumber"
+                                            [name]="'bulkMaterial' + i" required />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label [for]="'bulkSeal' + i" class="form-label">
+                                            EVD Seal Number <span class="required">*</span>
+                                        </label>
+                                        <input [id]="'bulkSeal' + i" type="text" class="form-input"
+                                            placeholder="Enter EVD seal number..." [(ngModel)]="item.evdSealNumber"
+                                            [name]="'bulkSeal' + i" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Errors -->
+                    <div class="error-section" *ngIf="validationErrors().length > 0">
+                        <div class="error-card">
+                            <h4 class="error-title">Please fix the following errors:</h4>
+                            <ul class="error-list">
+                                <li *ngFor="let error of validationErrors()" class="error-item">{{ error }}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="secondary-button" (click)="switchTab('create')">
+                            Reset Form
+                        </button>
+                        <button type="submit" class="primary-button" [disabled]="isSaving()">
+                            <svg *ngIf="!isSaving()" class="save-icon" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H16L21 8V19A2 2 0 0 1 19 21Z"
+                                    stroke="currentColor" stroke-width="2" fill="none" />
+                                <polyline points="17,21 17,13 7,13 7,21" stroke="currentColor" stroke-width="2"
+                                    fill="none" />
+                                <polyline points="7,3 7,8 15,8" stroke="currentColor" stroke-width="2" fill="none" />
+                            </svg>
+                            <svg *ngIf="isSaving()" class="loading-spinner" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 6V2M12 22V18M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            {{ isSaving() ? 'Saving...' : 'Save Shipment' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Modal Overlay -->
+<div class="modal-overlay" [class.visible]="modalState().isVisible" (click)="closeModal()">
+    <div class="modal enhanced-modal" [class.error-modal]="modalState().type === 'error'"
+        [class.success-modal]="modalState().type === 'success'"
+        [class.warning-modal]="modalState().type === 'not-found'"
+        [class.config-modal]="modalState().type === 'api-config'" (click)="$event.stopPropagation()">
+
+        <!-- Modal Icon -->
+        <div class="modal-icon-container">
+            <div class="modal-icon" [ngSwitch]="modalState().type">
+                <!-- Error Icon -->
+                <svg *ngSwitchCase="'error'" class="icon-error" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                    <path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+
+                <!-- Success Icon -->
+                <svg *ngSwitchCase="'success'" class="icon-success" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                    <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+
+                <!-- Warning Icon (for not-found) -->
+                <svg *ngSwitchCase="'not-found'" class="icon-warning" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                        stroke="currentColor" stroke-width="2" />
+                    <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" />
+                    <circle cx="12" cy="17" r="1" fill="currentColor" />
+                </svg>
+
+                <!-- Config Icon -->
+                <svg *ngSwitchCase="'api-config'" class="icon-config" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                    <path
+                        d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"
+                        stroke="currentColor" stroke-width="2" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h3 class="modal-title">{{ modalState().title }}</h3>
+            <button class="modal-close" (click)="closeModal()" title="Close">
+                <svg class="close-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="modal-content">
+            <p class="modal-message">{{ modalState().message }}</p>
+
+            <!-- API Configuration Form -->
+            <div class="api-config-form" *ngIf="modalState().type === 'api-config'">
+                <div class="form-group">
+                    <label for="apiUrl" class="form-label">API Base URL</label>
+                    <input id="apiUrl" type="text" class="form-input" placeholder="http://localhost:5144"
+                        [(ngModel)]="apiConfig.baseUrl" />
+                </div>
+
+                <div class="form-group">
+                    <label for="bearerToken" class="form-label">Bearer Token (Optional)</label>
+                    <input id="bearerToken" type="password" class="form-input" placeholder="Enter bearer token..."
+                        [(ngModel)]="apiConfig.bearerToken" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions">
+            <button class="secondary-button" (click)="closeModal()">
+                {{ modalState().type === 'not-found' ? 'No' : 'Close' }}
+            </button>
+
+            <button *ngIf="modalState().type === 'not-found'" class="primary-button" (click)="onNotFoundYes()">
+                Yes, Add This Number
+            </button>
+
+            <button *ngIf="modalState().type === 'api-config'" class="primary-button" (click)="saveApiConfig()">
+                Save Configuration
+            </button>
+        </div>
+    </div>
+</div>

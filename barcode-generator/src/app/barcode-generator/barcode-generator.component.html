@@ -1,0 +1,256 @@
+<div class="app-container">
+    <!-- Background gradient -->
+    <div class="background-gradient"></div>
+
+    <!-- Glass morphism container -->
+    <div class="glass-container">>
+        <!-- Color Picker -->
+        <div class="color-picker-container">
+            <label for="themeColorPicker" class="color-picker-label">Theme</label>
+            <input type="color" id="themeColorPicker" class="color-picker" [value]="themeColor()"
+                (input)="onColorChange($any($event.target).value)"
+                (change)="onColorChange($any($event.target).value)" />
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">{{ title() }}</h1>
+            <p class="subtitle">Generate professional barcodes/qr codes instantly</p>
+        </header>
+
+        <!-- Navigation Button -->
+        <div class="navigation-section">
+            <button class="shipment-manager-button" (click)="goToShipmentManager()">
+                <svg class="shipment-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 7L9 18L4 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M21 12V7A2 2 0 0 0 19 5H5A2 2 0 0 0 3 7V17A2 2 0 0 0 5 19H13" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class="button-text">
+                    <span class="button-title">Shipment Manager</span>
+                    <span class="button-subtitle">Create & View Shipments</span>
+                </span>
+                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Barcode generation grid -->
+        <div class="barcode-grid">
+
+            <!-- Barcode Generator 1 -->
+            <div class="barcode-card">
+                <div class="input-group">
+                    <div class="input-header">
+                        <label for="input1" class="input-label">Input1</label>
+                        <div class="toggle-container">
+                            <div class="toggle-switch" [class.qr-mode]="isQrMode1()" (click)="toggleCodeType(1)">
+                                <div class="toggle-slider"></div>
+                                <span class="toggle-text toggle-text-bc">BC</span>
+                                <span class="toggle-text toggle-text-qr">QR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="input1" type="text" class="glass-input" [value]="text1()"
+                        (input)="onTextChange(1, $any($event.target).value || '')" placeholder="Enter text..." />
+                </div>
+                <div class="barcode-container">
+                    <svg #barcode1 class="barcode-svg" [style.display]="isQrMode1() ? 'none' : 'block'"></svg>
+                    <canvas #qrcode1 class="qr-canvas" [style.display]="isQrMode1() ? 'block' : 'none'" width="200"
+                        height="200" style="width: 200px; height: 200px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Barcode Generator 2 -->
+            <div class="barcode-card">
+                <div class="input-group">
+                    <div class="input-header">
+                        <label for="input2" class="input-label">Input2</label>
+                        <div class="toggle-container">
+                            <div class="toggle-switch" [class.qr-mode]="isQrMode2()" (click)="toggleCodeType(2)">
+                                <div class="toggle-slider"></div>
+                                <span class="toggle-text toggle-text-bc">BC</span>
+                                <span class="toggle-text toggle-text-qr">QR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="input2" type="text" class="glass-input" [value]="text2()"
+                        (input)="onTextChange(2, $any($event.target).value || '')" placeholder="Enter text..." />
+                </div>
+                <div class="barcode-container">
+                    <svg #barcode2 class="barcode-svg" [style.display]="isQrMode2() ? 'none' : 'block'"></svg>
+                    <canvas #qrcode2 class="qr-canvas" [style.display]="isQrMode2() ? 'block' : 'none'" width="200"
+                        height="200" style="width: 200px; height: 200px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Barcode Generator 3 -->
+            <div class="barcode-card">
+                <div class="input-group">
+                    <div class="input-header">
+                        <label for="input3" class="input-label">Input3</label>
+                        <div class="toggle-container">
+                            <div class="toggle-switch" [class.qr-mode]="isQrMode3()" (click)="toggleCodeType(3)">
+                                <div class="toggle-slider"></div>
+                                <span class="toggle-text toggle-text-bc">BC</span>
+                                <span class="toggle-text toggle-text-qr">QR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="input3" type="text" class="glass-input" [value]="text3()"
+                        (input)="onTextChange(3, $any($event.target).value || '')" placeholder="Enter text..." />
+                </div>
+                <div class="barcode-container">
+                    <svg #barcode3 class="barcode-svg" [style.display]="isQrMode3() ? 'none' : 'block'"></svg>
+                    <canvas #qrcode3 class="qr-canvas" [style.display]="isQrMode3() ? 'block' : 'none'" width="200"
+                        height="200" style="width: 200px; height: 200px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Barcode Generator 4 -->
+            <div class="barcode-card">
+                <div class="input-group">
+                    <div class="input-header">
+                        <label for="input4" class="input-label">Input4</label>
+                        <div class="toggle-container">
+                            <div class="toggle-switch" [class.qr-mode]="isQrMode4()" (click)="toggleCodeType(4)">
+                                <div class="toggle-slider"></div>
+                                <span class="toggle-text toggle-text-bc">BC</span>
+                                <span class="toggle-text toggle-text-qr">QR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="input4" type="text" class="glass-input" [value]="text4()"
+                        (input)="onTextChange(4, $any($event.target).value || '')" placeholder="Enter text..." />
+                </div>
+                <div class="barcode-container">
+                    <svg #barcode4 class="barcode-svg" [style.display]="isQrMode4() ? 'none' : 'block'"></svg>
+                    <canvas #qrcode4 class="qr-canvas" [style.display]="isQrMode4() ? 'block' : 'none'" width="200"
+                        height="200" style="width: 200px; height: 200px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Barcode Generator 5 -->
+            <div class="barcode-card">
+                <div class="input-group">
+                    <div class="input-header">
+                        <label for="input5" class="input-label">Input5</label>
+                        <div class="toggle-container">
+                            <div class="toggle-switch" [class.qr-mode]="isQrMode5()" (click)="toggleCodeType(5)">
+                                <div class="toggle-slider"></div>
+                                <span class="toggle-text toggle-text-bc">BC</span>
+                                <span class="toggle-text toggle-text-qr">QR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="input5" type="text" class="glass-input" [value]="text5()"
+                        (input)="onTextChange(5, $any($event.target).value || '')" placeholder="Enter text..." />
+                </div>
+                <div class="barcode-container">
+                    <svg #barcode5 class="barcode-svg" [style.display]="isQrMode5() ? 'none' : 'block'"></svg>
+                    <canvas #qrcode5 class="qr-canvas" [style.display]="isQrMode5() ? 'block' : 'none'" width="200"
+                        height="200" style="width: 200px; height: 200px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Barcode Generator 6 -->
+            <div class="barcode-card">
+                <div class="input-group">
+                    <div class="input-header">
+                        <label for="input6" class="input-label">Input6</label>
+                        <div class="toggle-container">
+                            <div class="toggle-switch" [class.qr-mode]="isQrMode6()" (click)="toggleCodeType(6)">
+                                <div class="toggle-slider"></div>
+                                <span class="toggle-text toggle-text-bc">BC</span>
+                                <span class="toggle-text toggle-text-qr">QR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="input6" type="text" class="glass-input" [value]="text6()"
+                        (input)="onTextChange(6, $any($event.target).value || '')" placeholder="Enter text..." />
+                </div>
+                <div class="barcode-container">
+                    <svg #barcode6 class="barcode-svg" [style.display]="isQrMode6() ? 'none' : 'block'"></svg>
+                    <canvas #qrcode6 class="qr-canvas" [style.display]="isQrMode6() ? 'block' : 'none'" width="200"
+                        height="200" style="width: 200px; height: 200px;"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="tech-console">
+                <!-- Terminal Header -->
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                    </div>
+                    <div class="terminal-title">~/dev/barcode-generator</div>
+                </div>
+                
+                <!-- Terminal Content -->
+                <div class="terminal-content">
+                    <div class="terminal-line">
+                        <span class="prompt">tejkiran@codex:~$</span>
+                        <span class="command typing-animation">whoami</span>
+                    </div>
+                    <div class="terminal-output">
+                        <div class="glitch-text" data-text="TEJKIRAN">
+                            <span class="text-layer">TEJKIRAN</span>
+                            <span class="text-layer">TEJKIRAN</span>
+                            <span class="text-layer">TEJKIRAN</span>
+                        </div>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="prompt">tejkiran@codex:~$</span>
+                        <span class="command typing-animation" style="animation-delay: 2s;">echo "$(uname -r) | $(date +%Y) | DEVELOPED BY"</span>
+                    </div>
+                    <div class="terminal-output" style="animation-delay: 3s;">
+                        <span class="tech-info">Angular-18.0.0 | 2025 | </span>
+                        <span class="developer-tag">DEVELOPED BY</span>
+                    </div>
+                    <div class="cursor-blink">█</div>
+                </div>
+                
+                <!-- Matrix Rain Effect -->
+                <div class="matrix-rain">
+                    <div class="matrix-column"></div>
+                    <div class="matrix-column"></div>
+                    <div class="matrix-column"></div>
+                    <div class="matrix-column"></div>
+                    <div class="matrix-column"></div>
+                </div>
+                
+                <!-- Digital Signature -->
+                <div class="digital-signature">
+                    <div class="signature-line">
+                        <span class="hash">#</span>
+                        <span class="signature-text">SHA256:a8b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6</span>
+                    </div>
+                    <div class="signature-line">
+                        <span class="hash">></span>
+                        <span class="signature-text">Signed by: tejkiran.dev</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Floating particles animation -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+</div>

@@ -256,6 +256,35 @@ export class ShipmentService {
     }
 
     /**
+     * Update shipment by shipment number
+     * @param shipmentNumber - Current shipment number to update
+     * @param updateData - Updated shipment data
+     */
+    updateShipment(shipmentNumber: string, updateData: {
+        shipmentNumber: string;
+        deliveries: {
+            deliveryNumber: string;
+            deliveryType: number;
+            containerItems?: ContainerItem[];
+            bulkItems?: BulkItem[];
+        }[];
+    }): Observable<ShipmentResponse> {
+        const url = `${this.currentConfig.baseUrl}/api/shipmentdelivery/shipment/${encodeURIComponent(shipmentNumber)}`;
+        
+        console.log('🔗 Update API URL:', url);
+        console.log('📤 Update request data:', updateData);
+        console.log('🔑 API Headers:', this.getHeaders());
+
+        return this.http.put<ShipmentResponse>(url, updateData, { headers: this.getHeaders() })
+            .pipe(
+                catchError((error) => {
+                    console.error('🚨 Service updateShipment error:', error);
+                    return this.handleError(error);
+                })
+            );
+    }
+
+    /**
      * Validate shipment delivery request
      * @param request - Request to validate
      */

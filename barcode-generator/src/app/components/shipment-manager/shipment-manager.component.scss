@@ -57,6 +57,22 @@
       transform: translateY(0) scale(1) rotateX(0deg);
       opacity: 1;
     }
+
+    .edit-modal {
+      transform: translateY(0) scale(1) rotateX(0deg);
+      opacity: 1;
+    }
+  }
+
+  // Alternative class name for edit modal
+  &.show {
+    opacity: 1;
+    visibility: visible;
+
+    .edit-modal {
+      transform: translateY(0) scale(1) rotateX(0deg);
+      opacity: 1;
+    }
   }
 }
 

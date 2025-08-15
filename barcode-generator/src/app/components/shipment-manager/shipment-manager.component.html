@@ -171,14 +171,26 @@
                                     </div>
                                 </div>
 
-                                <!-- Toggle Button -->
-                                <div class="toggle-container">
-                                    <div class="toggle-switch"
-                                        [class.qr-mode]="isDeliveryQrMode(delivery.deliveryNumber)"
-                                        (click)="toggleDeliveryCode(delivery.deliveryNumber)">
-                                        <div class="toggle-slider"></div>
-                                        <span class="toggle-text toggle-text-bc">BC</span>
-                                        <span class="toggle-text toggle-text-qr">QR</span>
+                                <div class="delivery-actions">
+                                    <!-- Edit Button -->
+                                    <button class="edit-delivery-button" 
+                                            (click)="openEditDeliveryModal(delivery)"
+                                            title="Edit Delivery">
+                                        <svg class="edit-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Toggle Button -->
+                                    <div class="toggle-container">
+                                        <div class="toggle-switch"
+                                            [class.qr-mode]="isDeliveryQrMode(delivery.deliveryNumber)"
+                                            (click)="toggleDeliveryCode(delivery.deliveryNumber)">
+                                            <div class="toggle-slider"></div>
+                                            <span class="toggle-text toggle-text-bc">BC</span>
+                                            <span class="toggle-text toggle-text-qr">QR</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -681,6 +693,159 @@
 
             <button *ngIf="modalState().type === 'api-config'" class="primary-button" (click)="saveApiConfig()">
                 Save Configuration
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Delivery Modal -->
+<div class="modal-overlay" [class.visible]="showEditModal()" (click)="closeEditModal()">
+    <div class="modal-content edit-modal" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <div class="modal-title-section">
+                <h2 class="modal-title">
+                    <svg class="modal-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Edit Delivery
+                </h2>
+                <p class="modal-subtitle">Update delivery information and items</p>
+            </div>
+            <button class="close-button" (click)="closeEditModal()">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="modal-body" *ngIf="editingDelivery()">
+            <!-- Delivery Basic Info -->
+            <div class="edit-section">
+                <h3 class="section-title">Delivery Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Delivery Number</label>
+                        <input type="text" class="form-input" 
+                               [value]="editingDelivery()!.deliveryNumber"
+                               (input)="updateDeliveryField('deliveryNumber', $event)"
+                               placeholder="Enter delivery number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Delivery Type</label>
+                        <select class="form-select" 
+                                [value]="editingDelivery()!.deliveryType"
+                                (change)="updateDeliveryType($event)">
+                            <option [value]="0">Container</option>
+                            <option [value]="1">Bulk</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container Items Section -->
+            <div class="edit-section" *ngIf="editingDelivery()!.deliveryType === 0">
+                <div class="section-header">
+                    <h3 class="section-title">Container Items</h3>
+                    <button class="add-item-button" (click)="addEditContainerItem()">
+                        <svg class="plus-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+                        </svg>
+                        Add Item
+                    </button>
+                </div>
+
+                <div class="items-list">
+                    <div class="item-edit-card" 
+                         *ngFor="let item of editingDelivery()!.containerItems; let i = index">
+                        <div class="item-edit-header">
+                            <span class="item-number">Item {{ i + 1 }}</span>
+                            <button class="remove-item-button" (click)="removeEditContainerItem(i)">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="item-edit-content">
+                            <div class="form-group">
+                                <label class="form-label">Material Number</label>
+                                <input type="text" class="form-input" 
+                                       [value]="item.materialNumber"
+                                       (input)="updateContainerItem(i, 'materialNumber', $event)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Serial Number</label>
+                                <input type="text" class="form-input" 
+                                       [value]="item.serialNumber"
+                                       (input)="updateContainerItem(i, 'serialNumber', $event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Items Section -->
+            <div class="edit-section" *ngIf="editingDelivery()!.deliveryType === 1">
+                <div class="section-header">
+                    <h3 class="section-title">Bulk Items</h3>
+                    <button class="add-item-button" (click)="addEditBulkItem()">
+                        <svg class="plus-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+                        </svg>
+                        Add Item
+                    </button>
+                </div>
+
+                <div class="items-list">
+                    <div class="item-edit-card" 
+                         *ngFor="let item of editingDelivery()!.bulkItems; let i = index">
+                        <div class="item-edit-header">
+                            <span class="item-number">Item {{ i + 1 }}</span>
+                            <button class="remove-item-button" (click)="removeEditBulkItem(i)">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="item-edit-content">
+                            <div class="form-group">
+                                <label class="form-label">Material Number</label>
+                                <input type="text" class="form-input" 
+                                       [value]="item.materialNumber"
+                                       (input)="updateBulkItem(i, 'materialNumber', $event)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">EVD Seal Number</label>
+                                <input type="text" class="form-input" 
+                                       [value]="item.evdSealNumber"
+                                       (input)="updateBulkItem(i, 'evdSealNumber', $event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions">
+            <button class="secondary-button" (click)="closeEditModal()">
+                Cancel
+            </button>
+            <button class="primary-button" 
+                    (click)="saveDeliveryChanges()"
+                    [disabled]="!isEditFormValid() || isSaving()">
+                <svg *ngIf="!isSaving()" class="save-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="17,21 17,13 7,13 7,21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="7,3 7,8 15,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div *ngIf="isSaving()" class="spinner-icon"></div>
+                {{ isSaving() ? 'Updating...' : 'Save Changes' }}
             </button>
         </div>
     </div>

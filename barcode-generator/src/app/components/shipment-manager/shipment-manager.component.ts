@@ -61,6 +61,11 @@ export class ShipmentManagerComponent implements OnInit, OnDestroy {
     deliveryToggleStates = signal<{ [key: string]: boolean }>({});
     itemToggleStates = signal<{ [key: string]: boolean }>({});
 
+    // Edit functionality
+    showEditModal = signal<boolean>(false);
+    editingDelivery = signal<DeliveryResponse | null>(null);
+    originalDelivery: DeliveryResponse | null = null;
+
     // Create tab data
     createForm = {
         shipmentNumber: '',
@@ -878,5 +883,312 @@ export class ShipmentManagerComponent implements OnInit, OnDestroy {
      */
     getSafeId(input: string): string {
         return input.replace(/[^a-zA-Z0-9]/g, '');
+    }
+
+    // ====================
+    // EDIT DELIVERY FUNCTIONALITY
+    // ====================
+
+    /**
+     * Open edit delivery modal
+     * @param delivery - Delivery to edit
+     */
+    openEditDeliveryModal(delivery: DeliveryResponse): void {
+        // Deep clone the delivery to avoid modifying the original
+        this.originalDelivery = delivery;
+        this.editingDelivery.set({
+            ...delivery,
+            containerItems: delivery.containerItems ? [...delivery.containerItems.map(item => ({ ...item }))] : [],
+            bulkItems: delivery.bulkItems ? [...delivery.bulkItems.map(item => ({ ...item }))] : []
+        });
+        this.showEditModal.set(true);
+    }
+
+    /**
+     * Close edit delivery modal
+     */
+    closeEditModal(): void {
+        this.showEditModal.set(false);
+        this.editingDelivery.set(null);
+        this.originalDelivery = null;
+    }
+
+    /**
+     * Update delivery field
+     * @param field - Field name to update
+     * @param event - Input event
+     */
+    updateDeliveryField(field: keyof DeliveryResponse, event: Event): void {
+        const target = event.target as HTMLInputElement;
+        const currentDelivery = this.editingDelivery();
+        if (currentDelivery) {
+            const updatedDelivery = { ...currentDelivery, [field]: target.value };
+            this.editingDelivery.set(updatedDelivery);
+        }
+    }
+
+    /**
+     * Update delivery type
+     * @param event - Select change event
+     */
+    updateDeliveryType(event: Event): void {
+        const target = event.target as HTMLSelectElement;
+        const deliveryType = parseInt(target.value) as DeliveryType;
+        const currentDelivery = this.editingDelivery();
+        
+        if (currentDelivery) {
+            const updatedDelivery = { ...currentDelivery, deliveryType };
+            
+            // Initialize items arrays based on delivery type
+            if (deliveryType === DeliveryType.Container) {
+                if (!updatedDelivery.containerItems || updatedDelivery.containerItems.length === 0) {
+                    updatedDelivery.containerItems = [{ materialNumber: '', serialNumber: '' }];
+                }
+                updatedDelivery.bulkItems = [];
+            } else {
+                if (!updatedDelivery.bulkItems || updatedDelivery.bulkItems.length === 0) {
+                    updatedDelivery.bulkItems = [{ materialNumber: '', evdSealNumber: '' }];
+                }
+                updatedDelivery.containerItems = [];
+            }
+            
+            this.editingDelivery.set(updatedDelivery);
+        }
+    }
+
+    /**
+     * Add new container item for editing
+     */
+    addEditContainerItem(): void {
+        const currentDelivery = this.editingDelivery();
+        if (currentDelivery) {
+            const containerItems = [...(currentDelivery.containerItems || [])];
+            containerItems.push({ materialNumber: '', serialNumber: '' });
+            this.editingDelivery.set({ ...currentDelivery, containerItems });
+        }
+    }
+
+    /**
+     * Remove container item at index for editing
+     * @param index - Index of item to remove
+     */
+    removeEditContainerItem(index: number): void {
+        const currentDelivery = this.editingDelivery();
+        if (currentDelivery && currentDelivery.containerItems) {
+            const containerItems = [...currentDelivery.containerItems];
+            containerItems.splice(index, 1);
+            this.editingDelivery.set({ ...currentDelivery, containerItems });
+        }
+    }
+
+    /**
+     * Update container item field
+     * @param index - Item index
+     * @param field - Field to update
+     * @param event - Input event
+     */
+    updateContainerItem(index: number, field: keyof ContainerItem, event: Event): void {
+        const target = event.target as HTMLInputElement;
+        const currentDelivery = this.editingDelivery();
+        
+        if (currentDelivery && currentDelivery.containerItems) {
+            const containerItems = [...currentDelivery.containerItems];
+            containerItems[index] = { ...containerItems[index], [field]: target.value };
+            this.editingDelivery.set({ ...currentDelivery, containerItems });
+        }
+    }
+
+    /**
+     * Add new bulk item for editing
+     */
+    addEditBulkItem(): void {
+        const currentDelivery = this.editingDelivery();
+        if (currentDelivery) {
+            const bulkItems = [...(currentDelivery.bulkItems || [])];
+            bulkItems.push({ materialNumber: '', evdSealNumber: '' });
+            this.editingDelivery.set({ ...currentDelivery, bulkItems });
+        }
+    }
+
+    /**
+     * Remove bulk item at index for editing
+     * @param index - Index of item to remove
+     */
+    removeEditBulkItem(index: number): void {
+        const currentDelivery = this.editingDelivery();
+        if (currentDelivery && currentDelivery.bulkItems) {
+            const bulkItems = [...currentDelivery.bulkItems];
+            bulkItems.splice(index, 1);
+            this.editingDelivery.set({ ...currentDelivery, bulkItems });
+        }
+    }
+
+    /**
+     * Update bulk item field
+     * @param index - Item index
+     * @param field - Field to update
+     * @param event - Input event
+     */
+    updateBulkItem(index: number, field: keyof BulkItem, event: Event): void {
+        const target = event.target as HTMLInputElement;
+        const currentDelivery = this.editingDelivery();
+        
+        if (currentDelivery && currentDelivery.bulkItems) {
+            const bulkItems = [...currentDelivery.bulkItems];
+            bulkItems[index] = { ...bulkItems[index], [field]: target.value };
+            this.editingDelivery.set({ ...currentDelivery, bulkItems });
+        }
+    }
+
+    /**
+     * Validate edit form
+     */
+    isEditFormValid(): boolean {
+        const delivery = this.editingDelivery();
+        if (!delivery) return false;
+
+        // Check delivery number
+        if (!delivery.deliveryNumber?.trim()) return false;
+
+        // Check items based on delivery type
+        if (delivery.deliveryType === DeliveryType.Container) {
+            if (!delivery.containerItems || delivery.containerItems.length === 0) return false;
+            return delivery.containerItems.every(item => 
+                item.materialNumber?.trim() && item.serialNumber?.trim()
+            );
+        } else {
+            if (!delivery.bulkItems || delivery.bulkItems.length === 0) return false;
+            return delivery.bulkItems.every(item => 
+                item.materialNumber?.trim() && item.evdSealNumber?.trim()
+            );
+        }
+    }
+
+    /**
+     * Save delivery changes
+     */
+    saveDeliveryChanges(): void {
+        console.log('🔄 Save delivery changes called');
+        
+        const editedDelivery = this.editingDelivery();
+        const currentShipment = this.currentShipment();
+        
+        console.log('📦 Edited delivery:', editedDelivery);
+        console.log('🚢 Current shipment:', currentShipment);
+        console.log('📋 Original delivery:', this.originalDelivery);
+        
+        if (!editedDelivery || !this.originalDelivery || !currentShipment) {
+            console.log('❌ Missing required data - stopping execution');
+            return;
+        }
+
+        // Validate the edited delivery
+        const isValid = this.isEditFormValid();
+        console.log('✅ Form validation result:', isValid);
+        
+        if (!isValid) {
+            console.log('❌ Form validation failed');
+            this.modalState.set({
+                isVisible: true,
+                type: 'error',
+                title: 'Validation Error',
+                message: 'Please fill in all required fields for the delivery.'
+            });
+            return;
+        }
+
+        console.log('🚀 Starting API call...');
+        
+        // Set loading state
+        this.isSaving.set(true);
+
+        // Prepare update data according to API specification
+        const updateData = {
+            shipmentNumber: currentShipment.shipmentNumber,
+            deliveries: currentShipment.deliveries.map(delivery => {
+                if (delivery.deliveryNumber === this.originalDelivery!.deliveryNumber) {
+                    // Use the edited delivery data
+                    return {
+                        deliveryNumber: editedDelivery.deliveryNumber,
+                        deliveryType: editedDelivery.deliveryType,
+                        containerItems: editedDelivery.deliveryType === DeliveryType.Container 
+                            ? editedDelivery.containerItems || []
+                            : undefined,
+                        bulkItems: editedDelivery.deliveryType === DeliveryType.Bulk 
+                            ? editedDelivery.bulkItems || []
+                            : undefined
+                    };
+                } else {
+                    // Keep other deliveries unchanged
+                    return {
+                        deliveryNumber: delivery.deliveryNumber,
+                        deliveryType: delivery.deliveryType,
+                        containerItems: delivery.deliveryType === DeliveryType.Container 
+                            ? delivery.containerItems || []
+                            : undefined,
+                        bulkItems: delivery.deliveryType === DeliveryType.Bulk 
+                            ? delivery.bulkItems || []
+                            : undefined
+                    };
+                }
+            })
+        };
+
+        console.log('📤 Update data prepared:', updateData);
+
+        // Call the update API
+        this.shipmentService.updateShipment(currentShipment.shipmentNumber, updateData)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    console.log('🔄 API call completed - setting loading to false');
+                    this.isSaving.set(false);
+                })
+            )
+            .subscribe({
+                next: (updatedShipment) => {
+                    console.log('✅ API call successful:', updatedShipment);
+                    
+                    // Update the current shipment with the response from API
+                    this.currentShipment.set(updatedShipment);
+
+                    // Close the edit modal
+                    this.closeEditModal();
+
+                    // Regenerate barcodes and QR codes for the updated delivery
+                    setTimeout(() => {
+                        this.regenerateBarcodes();
+                    }, 100);
+
+                    // Show success message
+                    this.modalState.set({
+                        isVisible: true,
+                        type: 'success',
+                        title: 'Delivery Updated',
+                        message: `Delivery ${editedDelivery.deliveryNumber} has been successfully updated via API.`
+                    });
+                },
+                error: (error) => {
+                    console.error('❌ API call failed:', error);
+                    
+                    // Handle API error
+                    let errorMessage = 'Failed to update delivery. Please try again.';
+                    
+                    if (error.error?.message) {
+                        errorMessage = error.error.message;
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+
+                    this.modalState.set({
+                        isVisible: true,
+                        type: 'error',
+                        title: 'Update Failed',
+                        message: errorMessage
+                    });
+
+                    console.error('Update delivery error:', error);
+                }
+            });
     }
 }
